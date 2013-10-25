@@ -18,7 +18,8 @@ def setup(context):
 
 def teardown(context):
     for child in context.children.values():
-        child.__proc.join()
+        if hasattr(child, '__proc'):
+            child.__proc.join()
         child.close()
     context.child = None
     context.children = {}
