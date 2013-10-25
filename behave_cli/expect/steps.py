@@ -119,3 +119,14 @@ def wait_for_text(context, text):
 @step(u'the timeout is {seconds} seconds')
 def set_timeout(context, seconds):
     context.timeout = int(seconds)
+
+
+@step(u'I type "{text}"')
+def i_type_text(context, text):
+    context.child.sendline(text)
+
+
+@step(u'I type the lines')
+def i_type_lines(context):
+    for row in context.table:
+        i_type_text(context, row['line'])
