@@ -6,6 +6,7 @@ from importlib import import_module
 from shutil import rmtree
 
 import os
+import pty
 import pexpect
 import fdpexpect
 import pkg_resources
@@ -41,9 +42,6 @@ def cli_args(context, args):
 
 @step(u'I run console script "{entry}"')
 def run_console_script(context, entry):
-    logfile = None
-    if hasattr(context, 'stdout_capture'):
-        logfile = context.stdout_capture
 
     e = None
     for p in pkg_resources.iter_entry_points(group='console_scripts'):
@@ -52,10 +50,26 @@ def run_console_script(context, entry):
     assert e, "Console script has entry point in setup.py"
     module = e.module_name
     target = e.attrs[0]
+    run_python_module(context, module, target)
 
-    def run_script(pipe, ctx):
-        sys.stdout = os.fdopen(pipe, "w")
-        sys.stderr = os.fdopen(pipe, "w")
+
+@step(u'I run module "{module}" target "{target}"')
+def run_python_module(context, module, target):
+    logfile = None
+    if hasattr(context, 'stdout_capture'):
+        logfile = context.stdout_capture
+
+    fullname = "{}.{}".format(module, target)
+
+    _io, pipeio = pty.openpty()
+
+    def run_script(_pipe, _io, ctx):
+        sys.stdout = os.fdopen(_pipe, "w")
+        sys.stderr = os.fdopen(_pipe, "w")
+        sys.stdin = os.fdopen(_pipe, "r")
+        # Explicitly open the tty to make it become a controlling tty.
+        tmp_fd = os.open(os.ttyname(_pipe), os.O_RDWR)
+        os.close(tmp_fd)
 
         try:
             from features.steps import mp_setup
@@ -64,7 +78,7 @@ def run_console_script(context, entry):
             pass
         try:
             from setproctitle import setproctitle
-            setproctitle("console script {}".format(entry))
+            setproctitle("python process: {}".format(fullname))
         except ImportError:
             pass
         for name, value in ctx.environ.iteritems():
@@ -73,16 +87,19 @@ def run_console_script(context, entry):
         sys.argv = ['-']
         if ctx.args:
             sys.argv += shlex.split(ctx.args)
+        else:
+            sys.argv = ['me']
         getattr(import_module(module), target)()
 
-    me, pipe = os.pipe()
-    proc = Process(target=run_script, args=(pipe, context))
+    proc = Process(target=run_script, args=(pipeio, _io,  context))
     proc.start()
 
-    context.child = fdpexpect.fdspawn(me, logfile=logfile)
+    os.close(pipeio)
+
+    context.child = fdpexpect.fdspawn(_io, logfile=logfile)
     context.child.__proc = proc
-    context.child.__pipe = me
-    context.children[entry] = context.child
+    context.child.__io = _io
+    context.children[fullname] = context.child
 
 
 @step(u'I run "{command}"')
@@ -130,3 +147,8 @@ def i_type_text(context, text):
 def i_type_lines(context):
     for row in context.table:
         i_type_text(context, row['line'])
+
+
+@step(u'I send end of file')
+def i_send_eof(context):
+    i_type_text(context, chr(4))

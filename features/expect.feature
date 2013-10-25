@@ -19,3 +19,18 @@ Feature: expect steps
             |1p     |
             |Q      |
         Then I see "foobar"
+
+    Scenario: I run module function
+        When I run module "features.data.main" target "main"
+        Then I see "FOOBAR"
+
+    Scenario: I run module function with input
+        When I run module "features.data.main" target "main_input"
+        And I type "foobar"
+        Then I see "FOOBAR"
+
+    Scenario: I run module function that reads forever
+        When I run module "features.data.main" target "main_forever_read"
+        And I type "foobar"
+        Then I see "FOOBAR"
+
