@@ -20,8 +20,14 @@ def setup(context):
 def teardown(context):
     for child in context.children.values():
         if hasattr(child, '__proc'):
+            os.write(child.__io, chr(4))
             os.kill(child.__proc.pid, signal.SIGHUP)
-            child.__proc.join()
+            child.__proc.join(1)
+            try:
+                os.kill(child.__proc.pid, signal.SIGTERM)
+                child.__proc.join(5)
+            except:
+                pass
         child.close()
     context.child = None
     context.children = {}
