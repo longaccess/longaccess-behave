@@ -95,9 +95,12 @@ def run_named_command(context, command, name):
     logfile = None
     if hasattr(context, 'stdout_capture'):
         logfile = context.stdout_capture
+    args = []
+    if context.args:
+        args = shlex.split(context.args)
     context.children[name] = pexpect.spawn(
         command, cwd=context.cwd, env=context.environ,
-        logfile=logfile, args=shlex.split(context.args))
+        logfile=logfile, args=args)
     context.child = context.children[name]
 
 
