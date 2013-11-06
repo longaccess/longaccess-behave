@@ -70,6 +70,7 @@ def run_python_module(context, module, target):
         # Explicitly open the tty to make it become a controlling tty.
         tmp_fd = os.open(os.ttyname(_pipe), os.O_RDWR)
         os.close(tmp_fd)
+        os.setsid()
 
         try:
             from features.steps import mp_setup
