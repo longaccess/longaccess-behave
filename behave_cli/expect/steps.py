@@ -123,6 +123,7 @@ def run_named_command(context, command, name):
 
 
 @step(u'I see "{text}"')
+@format_vars
 def i_see_text(context, text):
     txt = "Expected '{}'".format(text)
     assert expected_text(context.child, text, context.timeout), txt
