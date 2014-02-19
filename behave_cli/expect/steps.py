@@ -32,6 +32,7 @@ def home_directory(context, directory):
     else:
         os.makedirs(directory)
     assert os.path.isdir(directory), "Home directory doesn't exist"
+    context.dirs['home'] = directory
 
 
 @step(u'the command line arguments "{args}"')
