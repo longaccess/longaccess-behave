@@ -1,4 +1,4 @@
 from .vars import format_vars
 from .log import logger
 
-__version__ = '0.1a1dev1'
+__version__ = '0.1'
