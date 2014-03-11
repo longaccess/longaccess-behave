@@ -4,8 +4,8 @@ import os
 import signal
 
 
-def expected_text(child, text, timeout):
-    return 0 == child.expect_exact([text, TIMEOUT, EOF], timeout)
+def expected_text(child, pattern, timeout):
+    return 0 == child.expect([pattern, TIMEOUT, EOF], timeout)
 
 
 def setup(context):
