@@ -5,6 +5,9 @@ import signal
 
 
 def expected_text(child, pattern, timeout):
+    if child is None:
+        raise RuntimeError("expected_text called without having previously "
+                           "run a child process to interact with")
     return 0 == child.expect([pattern, TIMEOUT, EOF], timeout)
 
 
