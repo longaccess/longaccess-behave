@@ -34,3 +34,7 @@ Feature: expect steps
         And I type "foobar"
         Then I see "FOOBAR"
 
+    Scenario: I run module function and wait for some text
+        When I run module "features.data.main" target "main_delay_print"
+        And I type "foobar"
+        Then I wait 3 seconds to see "FOOBAR"
