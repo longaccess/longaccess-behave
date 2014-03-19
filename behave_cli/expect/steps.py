@@ -131,9 +131,14 @@ def i_see_text(context, text):
 
 
 @step(u'I wait until I don\'t see "{text}" anymore')
-def wait_for_text(context, text):
+def wait_for_text_to_dissapear(context, text):
     while expected_text(context.child, text, context.timeout):
         pass
+
+
+@step(u'I wait {timeout} seconds to see "{text}"')
+def wait_for_text(context, timeout, text):
+    assert expected_text(context.child, text, int(timeout))
 
 
 @step(u'the timeout is {seconds} seconds')

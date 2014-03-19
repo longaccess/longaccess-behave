@@ -4,8 +4,11 @@ import os
 import signal
 
 
-def expected_text(child, text, timeout):
-    return 0 == child.expect_exact([text, TIMEOUT, EOF], timeout)
+def expected_text(child, pattern, timeout):
+    if child is None:
+        raise RuntimeError("expected_text called without having previously "
+                           "run a child process to interact with")
+    return 0 == child.expect([pattern, TIMEOUT, EOF], timeout)
 
 
 def setup(context):
