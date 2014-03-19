@@ -11,7 +11,7 @@ setup(version=unicode(__version__),
       packages=['behave_cli', 'behave_cli.api', 'behave_cli.s3mock',
                 'behave_cli.expect', 'behave_cli.netrc', 'behave_cli.files'],
       install_requires=['behave', 'pexpect', 'requests', 'moto', 'mock'],
-      url='https://github.com/longaccess/behave-cli/',
+      url='https://github.com/longaccess/longaccess-behave/',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
