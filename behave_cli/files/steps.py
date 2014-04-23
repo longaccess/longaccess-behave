@@ -4,6 +4,7 @@ from behave_cli import format_vars
 from tempfile import NamedTemporaryFile, mkdtemp
 from errno import EPIPE
 from multiprocessing import Process
+from glob import glob
 
 
 @step(u'an empty file "{name}"')
@@ -33,7 +34,7 @@ def file_under_dir(context, directory, name):
 @format_vars
 def is_file_under_dir(context, path, directory):
     assert os.path.isdir(directory)
-    assert os.path.exists(os.path.join(directory, path))
+    assert len(glob(os.path.join(directory, path))) > 0
 
 
 @step(u'file "{path}" is unreadable')
