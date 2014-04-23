@@ -160,3 +160,12 @@ def i_type_lines(context):
 @step(u'I send end of file')
 def i_send_eof(context):
     i_type_text(context, chr(4))
+
+
+@step(u'I change to the "{d}" directory')
+@format_vars
+def i_chdir(context, d):
+    assert os.path.isdir(d)
+    if context.cwd != d:
+        os.chdir(d)
+        context.cwd = os.getcwd()

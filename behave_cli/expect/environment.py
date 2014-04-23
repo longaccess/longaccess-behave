@@ -2,10 +2,14 @@ from . import setup, teardown
 
 
 def expect_vars(context):
+    vs = {
+        'cwd': context.cwd,
+        'homedir': None
+    }
     if hasattr(context, 'environ'):
         if 'HOME' in context.environ:
-            return {'homedir': context.environ['HOME']}
-    return {'homedir': None}
+            vs['homedir'] = context.environ['HOME']
+    return vs
 
 
 def before_all(context):

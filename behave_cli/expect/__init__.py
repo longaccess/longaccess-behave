@@ -16,6 +16,7 @@ def setup(context):
     context.child = None
     context.children = {}
     context.cwd = os.getcwd()
+    context._cwd = context.cwd
     context.args = None
     context.timeout = 2
 
@@ -35,3 +36,4 @@ def teardown(context):
     context.child = None
     context.children = {}
     context.args = None
+    os.chdir(context._cwd)
