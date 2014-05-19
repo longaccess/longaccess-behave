@@ -1,15 +1,15 @@
 from behave.log_capture import capture
-from . import setup, teardown
+from . import setup, maybe_teardown
 
 
 @capture
 def before_all(context):
-    setup(context)
+    pass
 
 
 @capture
 def after_all(context):
-    teardown(context)
+    pass
 
 
 def before_feature(context, feature):
@@ -22,9 +22,10 @@ def after_feature(context, feature):
 
 @capture
 def before_scenario(context, scenario):
-    setup(context)
+    if 's3mock' in scenario.tags:
+        setup(context)
 
 
 @capture
 def after_scenario(context, scenario):
-    teardown(context)
+    maybe_teardown(context)

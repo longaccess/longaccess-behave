@@ -9,6 +9,11 @@ class PatchedSession(requests.Session):
         self.headers['connection'] = 'Close'
 
 
+def maybe_teardown(context):
+    if hasattr(context, 'moto') and context.moto is not None:
+        teardown(context)
+
+
 def setup(context):
     context.moto = mock_s3()
     context.moto.start()
@@ -20,3 +25,4 @@ def setup(context):
 def teardown(context):
     context.patcher.stop()
     context.moto.stop()
+    context.moto = None
