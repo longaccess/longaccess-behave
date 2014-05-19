@@ -1,7 +1,15 @@
 import os
-import shutil
 
 from behave_cli import environment as clienv
+
+from distutils.util import strtobool as _bool
+BEHAVE_DEBUG_ON_ERROR = _bool(os.environ.get("BEHAVE_DEBUG_ON_ERROR", "no"))
+
+
+def after_step(context, step):
+    if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
+        import ipdb
+        ipdb.post_mortem(step.exc_traceback)
 
 
 def before_all(context):
