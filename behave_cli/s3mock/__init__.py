@@ -1,4 +1,4 @@
-from moto import mock_s3
+from .boto_init import start_moto, stop_moto
 import requests
 from mock import patch
 
@@ -9,14 +9,18 @@ class PatchedSession(requests.Session):
         self.headers['connection'] = 'Close'
 
 
+def maybe_teardown(context):
+    if hasattr(context, 'moto') and context.moto is not None:
+        teardown(context)
+
+
 def setup(context):
-    context.moto = mock_s3()
-    context.moto.start()
     context.patcher = patch('requests.Session', PatchedSession)
     context.patcher.start()
+    start_moto(context)
     context.buckets = []
 
 
 def teardown(context):
+    stop_moto(context)
     context.patcher.stop()
-    context.moto.stop()
