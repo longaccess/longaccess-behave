@@ -1,21 +1,16 @@
 from behave import step
-from boto import connect_s3
-from boto import config as boto_config
+from .boto_init import get_s3_connection
 
 
 @step(u'an S3 bucket named "{name}"')
 def s3bucket_named(context, name):
-    if not boto_config.has_section('Boto'):
-        boto_config.add_section('Boto')
-    boto_config.set('Boto', 'debug', '0')
-    boto = connect_s3()
-    boto.create_bucket(name)
+    get_s3_connection().create_bucket(name)
     context.buckets.append(name)
 
 
 @step(u'there are {num} keys in the bucket "{bucket}"')
 def s3bucket_num_keys_bucket(context, num, bucket):
-    bucket = connect_s3().get_bucket(bucket)
+    bucket = get_s3_connection().get_bucket(bucket)
     assert len(bucket.get_all_keys()) == int(num), "{} keys in {}".format(
         num, bucket)
 
@@ -29,7 +24,7 @@ def s3bucket_num_keys(context, num):
 
 @step(u'the key "{key}" exists in the bucket "{bucket}"')
 def s3bucket_key_bucket(context, key, bucket):
-    bucket = connect_s3().get_bucket(bucket)
+    bucket = get_s3_connection().get_bucket(bucket)
     assert bucket.get_key(key) is not None, "key {} exist in {}".format(
         key, bucket)
 
@@ -57,7 +52,7 @@ def s3bucket_keys(context):
 
 @step(u'I set the contents of key "{key}" in bucket "{b}" to "{contents}"')
 def s3bucket_set_key_bucket(context, key, b, contents):
-    bucket = connect_s3().get_bucket(b)
+    bucket = get_s3_connection().get_bucket(b)
     key = bucket.new_key(key)
     key.set_contents_from_string(contents)
 

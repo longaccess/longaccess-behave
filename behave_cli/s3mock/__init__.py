@@ -1,4 +1,4 @@
-from moto import mock_s3
+from .boto_init import start_moto, stop_moto
 import requests
 from mock import patch
 
@@ -15,14 +15,12 @@ def maybe_teardown(context):
 
 
 def setup(context):
-    context.moto = mock_s3()
-    context.moto.start()
     context.patcher = patch('requests.Session', PatchedSession)
     context.patcher.start()
+    start_moto(context)
     context.buckets = []
 
 
 def teardown(context):
+    stop_moto(context)
     context.patcher.stop()
-    context.moto.stop()
-    context.moto = None
