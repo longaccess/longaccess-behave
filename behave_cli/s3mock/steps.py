@@ -32,7 +32,7 @@ def s3bucket_key_bucket(context, key, bucket):
 @step(u'the key "{key}" exists')
 def s3bucket_key(context, key):
     context.execute_steps(u"""
-        Given the key {} exists in the bucket "{}"
+        Given the key "{}" exists in the bucket "{}"
         """.format(key, context.buckets[0]))
 
 
